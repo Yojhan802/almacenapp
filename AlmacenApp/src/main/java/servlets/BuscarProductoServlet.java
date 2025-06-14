@@ -11,7 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import com.google.gson.Gson;
 
-@WebServlet("/buscar-productos")
+@WebServlet( urlPatterns = "/buscar-productos" )
 public class BuscarProductoServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
