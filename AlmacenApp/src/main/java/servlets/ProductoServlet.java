@@ -1,7 +1,8 @@
 package servlets;
 
 import com.google.gson.Gson;
-import dao.ProductoDAO;
+import dao.ProductoJpaController;
+
 import dto.Producto;
 
 
@@ -15,8 +16,9 @@ import javax.servlet.annotation.WebServlet;
 @WebServlet(name = "ProductoServlet", urlPatterns = {"/producto", "/producto/*"})
 public class ProductoServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        ProductoDAO dao = new ProductoDAO();
-        List<Producto> productos = dao.listarProductos();
+        //ProductoDAO dao = new ProductoDAO();
+        ProductoJpaController dao = new ProductoJpaController();
+        List<Producto> productos = dao.findProductoEntities();
 
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();

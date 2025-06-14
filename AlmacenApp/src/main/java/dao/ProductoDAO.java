@@ -1,4 +1,4 @@
-package dao;
+/*package dao;
 
 import dto.Producto;
 import javax.persistence.EntityManager;
@@ -17,4 +17,4 @@ public class ProductoDAO {
             if (em != null) em.close();
         }
     }
-}
+}*/
