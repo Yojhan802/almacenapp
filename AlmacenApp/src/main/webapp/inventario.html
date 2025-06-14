@@ -1,19 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Sistema de Almacén</title>
   <meta charset="UTF-8">
+  <title>Sistema de Almacén</title>
   <style>
-    body { font-family: Arial; margin: 20px; }
-    #error { color: red; display: none; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, rgb(63, 94, 251), rgb(252, 70, 107));
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+      color: white;
+      font-size: 30px;
+      font-weight: bold;
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      margin-top: 40px;
+      padding: 30px;
+      width: 90%;
+      max-width: 800px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-cargar {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid white;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .btn-cargar:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    #error {
+      display: none;
+      color: white;
+      background-color: rgba(255, 0, 0, 0.5);
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      color: white;
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
   </style>
 </head>
 <body>
-  <h1>📦 Productos en Almacén</h1>
-  <br>
-  <input type="submit" value="ok" name="ok" onclick="cargarProductos()"/>
-  <div id="error">⚠ No se pudo conectar con el servidor. Reintentando...</div>
-  <ul id="listaProductos"></ul>
+
+  <header>📦 Sistema de Almacén</header>
+
+  <div class="container">
+    <button class="btn-cargar" onclick="cargarProductos()">🔄 Cargar Productos</button>
+    <div id="error">⚠ No se pudo conectar con el servidor. Reintentando en 5 segundos...</div>
+    <table id="tablaProductos">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Stock</th>
+          <th>Precio (S/)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
   <script>
     function cargarProductos() {
@@ -24,12 +119,16 @@
         })
         .then(data => {
           document.getElementById("error").style.display = "none";
-          let lista = document.getElementById("listaProductos");
-          lista.innerHTML = "";
+          const tbody = document.querySelector("#tablaProductos tbody");
+          tbody.innerHTML = "";
           data.forEach(p => {
-            let item = document.createElement("li");
-            item.textContent = `${p.nombre} - Stock: ${p.stock} - S/ ${p.precio}`;
-            lista.appendChild(item);
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${p.nombre}</td>
+              <td>${p.stock}</td>
+              <td>${p.precio}</td>
+            `;
+            tbody.appendChild(row);
           });
         })
         .catch(() => {
@@ -37,8 +136,7 @@
           setTimeout(cargarProductos, 5000);
         });
     }
-
-    
   </script>
+
 </body>
 </html>

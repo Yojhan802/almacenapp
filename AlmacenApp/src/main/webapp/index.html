@@ -49,7 +49,6 @@
     .content {
       flex: 1;
       padding: 40px;
-      overflow-y: auto;
       background: linear-gradient(to bottom right, #f0f2f5, #e6ecf1);
     }
 
@@ -149,7 +148,7 @@
       <div class="crud-item" onclick="alert('Editar producto')">✏️ Editar producto</div>
       <div class="crud-item" onclick="mostrarTablaProductos()">🗑️ Eliminar producto</div>
     </div>
-    <button onclick="mostrarSeccion('inventario')">📊 Inventario</button>
+    <button onclick="cargarIframe()">📊 Inventario</button>
   </div>
 
   <div class="content" id="main-content">
@@ -163,9 +162,7 @@
       <p>Aquí se mostrarán los productos almacenados.</p>
     </div>
 
-    <div class="card" id="inventario" style="display:none;">
-      <h3>📊 Resumen / Inventario</h3>
-      <p>Aquí podrá ver el resumen del inventario actual, productos con poco stock, etc.</p>
+    <div class="card" id="inventario" >
     </div>
 
     <div id="contenedor-tabla"></div>
@@ -241,6 +238,23 @@
       .catch(error => {
         console.error("Error al eliminar:", error);
       });
+    }
+  </script>
+  <script>
+    function cargarIframe() {
+      const contenedor = document.getElementById('main-content');
+      contenedor.innerHTML = ''; 
+      contenedor.style.padding="0px"; // Limpiar antes de cargar otro iframe
+      const iframe = document.createElement('iframe');
+      iframe.id = 'visor';
+      iframe.setAttribute("scrolling", "no");
+      iframe.style.overflow = "hidden";
+      iframe.style.border = "none";
+      iframe.width="100%";
+      iframe.height="100%";
+      iframe.border="none";
+      iframe.src = 'inventario.html'; // Ruta a tu archivo del sistema de almacén
+      contenedor.appendChild(iframe);
     }
   </script>
 </body>
