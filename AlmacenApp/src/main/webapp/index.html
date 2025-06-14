@@ -1,44 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Sistema de Almacén</title>
   <meta charset="UTF-8">
+  <title>Dashboard Almacén</title>
   <style>
-    body { font-family: Arial; margin: 20px; }
-    #error { color: red; display: none; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: #2c3e50;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar h2 {
+      margin-top: 0;
+      font-size: 24px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .sidebar button {
+      background-color: transparent;
+      border: none;
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s, padding-left 0.3s;
+      border-radius: 6px;
+    }
+
+    .sidebar button:hover {
+      background-color: #34495e;
+      padding-left: 20px;
+    }
+
+    .content {
+      flex: 1;
+      padding: 40px;
+      overflow-y: auto;
+      background: linear-gradient(to bottom right, #f0f2f5, #e6ecf1);
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+
+    .crud-item {
+      background-color: #3498db;
+      color: white;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-bottom: 8px;
+    }
+
+    .crud-item:hover {
+      background-color: #2980b9;
+    }
+
+    .dropdown {
+      display: none;
+      flex-direction: column;
+      margin-left: 15px;
+      animation: slideDown 0.4s ease forwards;
+    }
+
+    .dropdown.show {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
   </style>
 </head>
 <body>
-  <h1>📦 Productos en Almacén</h1>
-  <br>
-  <input type="submit" value="ok" name="ok" onclick="cargarProductos()"/>
-  <div id="error">⚠ No se pudo conectar con el servidor. Reintentando...</div>
-  <ul id="listaProductos"></ul>
+  <div class="sidebar">
+    <h2>📦 Almacén</h2>
+    <button onclick="mostrarSeccion('dashboard')">🏠 Dashboard</button>
+    <button onclick="toggleDropdown()">🛠 Gestionar Productos</button>
+    <div class="dropdown" id="dropdownProductos">
+      <div class="crud-item" onclick="mostrarSeccion('productos')">🔍 Ver productos</div>
+      <div class="crud-item" onclick="alert('Agregar producto')">➕ Agregar producto</div>
+      <div class="crud-item" onclick="alert('Editar producto')">✏️ Editar producto</div>
+      <div class="crud-item" onclick="alert('Eliminar producto')">🗑️ Eliminar producto</div>
+    </div>
+    <button onclick="mostrarSeccion('inventario')">📊 Inventario</button>
+  </div>
+
+  <div class="content" id="main-content">
+    <div class="card" id="dashboard">
+      <h3>Bienvenido al sistema de almacén</h3>
+      <p>Seleccione una opción del panel lateral para comenzar.</p>
+    </div>
+
+    <div class="card" id="productos" style="display:none;">
+      <h3>🔍 Ver productos</h3>
+      <p>Aquí se mostrarán los productos almacenados.</p>
+    </div>
+
+    <div class="card" id="inventario" style="display:none;">
+      <h3>📊 Resumen / Inventario</h3>
+      <p>Aquí podrá ver el resumen del inventario actual, productos con poco stock, etc.</p>
+    </div>
+  </div>
 
   <script>
-    function cargarProductos() {
-      fetch("producto")
-        .then(res => {
-          if (!res.ok) throw new Error("Error conexión");
-          return res.json();
-        })
-        .then(data => {
-          document.getElementById("error").style.display = "none";
-          let lista = document.getElementById("listaProductos");
-          lista.innerHTML = "";
-          data.forEach(p => {
-            let item = document.createElement("li");
-            item.textContent = `${p.nombre} - Stock: ${p.stock} - S/ ${p.precio}`;
-            lista.appendChild(item);
-          });
-        })
-        .catch(() => {
-          document.getElementById("error").style.display = "block";
-          setTimeout(cargarProductos, 5000);
-        });
+    function mostrarSeccion(id) {
+      const secciones = ['dashboard', 'productos', 'inventario'];
+      secciones.forEach(sec => {
+        document.getElementById(sec).style.display = (sec === id) ? 'block' : 'none';
+      });
     }
 
-    
+    function toggleDropdown() {
+      const dropdown = document.getElementById("dropdownProductos");
+      dropdown.classList.toggle("show");
+    }
   </script>
 </body>
 </html>

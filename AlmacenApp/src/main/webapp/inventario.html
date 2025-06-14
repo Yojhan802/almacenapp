@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sistema de Almacén</title>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    #error { color: red; display: none; }
+  </style>
+</head>
+<body>
+  <h1>📦 Productos en Almacén</h1>
+  <br>
+  <input type="submit" value="ok" name="ok" onclick="cargarProductos()"/>
+  <div id="error">⚠ No se pudo conectar con el servidor. Reintentando...</div>
+  <ul id="listaProductos"></ul>
+
+  <script>
+    function cargarProductos() {
+      fetch("producto")
+        .then(res => {
+          if (!res.ok) throw new Error("Error conexión");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById("error").style.display = "none";
+          let lista = document.getElementById("listaProductos");
+          lista.innerHTML = "";
+          data.forEach(p => {
+            let item = document.createElement("li");
+            item.textContent = `${p.nombre} - Stock: ${p.stock} - S/ ${p.precio}`;
+            lista.appendChild(item);
+          });
+        })
+        .catch(() => {
+          document.getElementById("error").style.display = "block";
+          setTimeout(cargarProductos, 5000);
+        });
+    }
+
+    
+  </script>
+</body>
+</html>
