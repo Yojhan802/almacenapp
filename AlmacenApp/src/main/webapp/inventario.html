@@ -261,6 +261,7 @@
       }
     }
   </style>
+  <script src="js/JavaScript.js"></script>
 </head>
 <body>
   <header>📦 Sistema de Almacén</header>
@@ -283,45 +284,7 @@
   </div>
 
   <script>
-    function cargarProductos() {
-      fetch("producto")
-        .then(res => {
-          if (!res.ok) throw new Error("Error conexión");
-          return res.json();
-        })
-        .then(data => {
-          document.getElementById("error").style.display = "none";
-          const tbody = document.querySelector("#tablaProductos tbody");
-          tbody.innerHTML = "";
-          data.forEach(p => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-              <td>${p.id}</td>
-              <td>${p.nombre}</td>
-              <td>${p.stock}</td>
-              <td>${p.precio}</td>
-            `;
-            tbody.appendChild(row);
-          });
-        })
-        .catch(() => {
-          document.getElementById("error").style.display = "block";
-          setTimeout(cargarProductos, 5000);
-        });
-    }
-
-    // Efecto de carga inicial
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelector('.container').style.opacity = '0';
-      document.querySelector('.container').style.transform = 'translateY(20px)';
-      
-      setTimeout(() => {
-        document.querySelector('.container').style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        document.querySelector('.container').style.opacity = '1';
-        document.querySelector('.container').style.transform = 'translateY(0)';
-        cargarProductos();
-      }, 100);
-    });
+    
   </script>
 </body>
 </html>

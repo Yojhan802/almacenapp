@@ -229,6 +229,7 @@
       }
     }
   </style>
+  <script src="js/JavaScript.js"></script>
 </head>
 <body>
   <div class="card">
@@ -248,85 +249,7 @@
   </div>
 
   <script>
-    function showMessage(message, isError = true) {
-      const statusEl = document.getElementById('statusMessage');
-      statusEl.textContent = message;
-      statusEl.className = isError ? 'status-message error' : 'status-message success';
-      
-      if (!isError) {
-        setTimeout(() => {
-          statusEl.style.display = 'none';
-        }, 3000);
-      }
-    }
-
-    function buscarProductoPorIdEditar() {
-      const id = document.getElementById('idBuscar').value;
-      if (!id) {
-        showMessage("❌ Por favor ingrese un ID válido");
-        return false;
-      }
-
-      fetch(`producto/${id}`)
-        .then(res => {
-          if (!res.ok) throw new Error("No encontrado");
-          return res.json();
-        })
-        .then(producto => {
-          showMessage("", false);
-          mostrarFormularioConDatos(producto);
-        })
-        .catch(err => {
-          showMessage("❌ Producto no encontrado");
-          console.error(err);
-        });
-
-      return false;
-    }
-
-    function mostrarFormularioConDatos(producto) {
-      const contenedor = document.getElementById('editarFormulario');
-      contenedor.style.display = 'block';
-      contenedor.innerHTML = `
-        <form onsubmit="return guardarCambiosProducto(${producto.id})">
-          <label for="edit-nombre">Nombre:</label>
-          <input type="text" id="edit-nombre" value="${producto.nombre}" required>
-
-          <label for="edit-precio">Precio:</label>
-          <input type="number" id="edit-precio" value="${producto.precio}" step="0.01" required>
-
-          <label for="edit-stock">Stock:</label>
-          <input type="number" id="edit-stock" value="${producto.stock}" required>
-
-          <button type="submit">💾 Guardar Cambios</button>
-        </form>
-      `;
-    }
-
-    function guardarCambiosProducto(id) {
-      const productoEditado = {
-        id,
-        nombre: document.getElementById('edit-nombre').value,
-        precio: parseFloat(document.getElementById('edit-precio').value),
-        stock: parseInt(document.getElementById('edit-stock').value)
-      };
-
-      fetch('producto', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productoEditado)
-      })
-      .then(res => {
-        if (!res.ok) throw new Error("Error al actualizar");
-        showMessage("✅ Producto actualizado correctamente", false);
-      })
-      .catch(err => {
-        showMessage("❌ No se pudo guardar los cambios");
-        console.error(err);
-      });
-
-      return false;
-    }
+    
   </script>
 </body>
 </html>

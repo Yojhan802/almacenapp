@@ -149,6 +149,7 @@
       to { opacity: 1; }
     }
   </style>
+  <script src="js/JavaScript.js"></script>
 </head>
 <body>
   <div class="sidebar">
@@ -171,77 +172,21 @@
   </div>
 
   <script>
-      function mostrarFormularioEdicion(id,url) {
-  mostrarSeccion(id); // Muestra la sección específica
-  const contenedor = document.getElementById(id);
-  contenedor.innerHTML = `
-    
-    <iframe src="${url}" style="width: 100%; height: 100vh; border: none;"></iframe>
-  `;
-}
-    // Función para mostrar/ocultar secciones
-    function mostrarSeccion(id) {
-      const secciones = ['dashboard', 'productos', 'inventario', 'contenedor-tabla','editarproducto'];
-      secciones.forEach(sec => {
-        const elemento = document.getElementById(sec);
-        if (elemento) {
-          elemento.style.display = (sec === id) ? 'block' : 'none';
-        }
-      });
       
-      if (id==='contenedor-tabla') {
-          const inventario = document.getElementById('inventario');
-        inventario.innerHTML = '';
-}
-      // Limpia el contenido del iframe al cambiar de sección
-      if (id !== 'inventario') {
-        const inventario = document.getElementById('inventario');
-        inventario.innerHTML = '';
-      }
-      
-      
-      if (id === 'inventario') {
-        const div = document.getElementById('main-content');
-        div.style.padding = "0px";
-      } 
-
-      if (id !== 'productos') {
-        document.getElementById('contenedor-tabla').innerHTML = '';
-      }
-    }
-
-    // Función para mostrar/ocultar el menú desplegables
-    function toggleDropdown() {
-      const dropdown = document.getElementById("dropdownProductos");
-      dropdown.classList.toggle("show");
-    }
-
- 
-
-    // Función para eliminar un producto
-   
-
-    // Función para cargar el iframe del inventario
-    function cargarIframe() {
-      mostrarSeccion('inventario');
-      const contenedor = document.getElementById('inventario');
-      contenedor.innerHTML = '';
-      contenedor.style.padding = "0px";
-
-      const iframe = document.createElement('iframe');
-      iframe.id = 'visor';
-      iframe.setAttribute("scrolling", "no");
-      iframe.style.overflow = "hidden";
-      iframe.style.border = "none";
-      iframe.width = "100%";
-      iframe.height = "100%";
-      iframe.src = 'inventario.html';
-
-      contenedor.appendChild(iframe);
-    }
   </script>
   <script >
-      
+     window.onload = function () {
+  // Mostrar el dashboard por defecto
+  mostrarFormularioEdicion('editarproducto', 'inicio.html');
+
+  // Verifica si se pidió mostrar inventario desde la portada
+  const mostrar = localStorage.getItem("mostrarInventario");
+  if (mostrar === "true") {
+
+    // Limpia el localStorage para evitar que se repita al recargar
+    localStorage.removeItem("mostrarInventario");
+  }
+};
 
     
 
