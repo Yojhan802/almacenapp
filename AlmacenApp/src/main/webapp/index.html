@@ -49,8 +49,21 @@
     .content {
       flex: 1;
       padding: 40px;
-      overflow-y: auto;
       background: linear-gradient(to bottom right, #f0f2f5, #e6ecf1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    #inventario {
+      flex: 1;
+      display: flex;
+      padding: 0;
+    }
+
+    #inventario iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
 
     .card {
@@ -109,6 +122,19 @@
       background-color: #f2f2f2;
     }
 
+    button {
+      padding: 6px 10px;
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: darkred;
+    }
+
     @keyframes slideDown {
       0% {
         opacity: 0;
@@ -133,10 +159,10 @@
     <button onclick="toggleDropdown()">🛠 Gestionar Productos</button>
     <div class="dropdown" id="dropdownProductos">
       <div class="crud-item" onclick="alert('Agregar producto')">➕ Agregar producto</div>
-      <div class="crud-item" onclick="alert('Editar producto')">✏️ Editar producto</div>
-      <div class="crud-item" onclick="mostrarFormularioEliminar()">🗑️ Eliminar producto</div>
+      <div class="crud-item" onclick="mostrarFormularioEdicion()">✏️ Editar producto</div>
+      <div class="crud-item" onclick="mostrarSeccion('contenedor-tabla'), mostrarFormularioEliminar()">🗑️ Eliminar producto</div>
     </div>
-    <button onclick="mostrarSeccion('inventario')">📊 Inventario</button>
+    <button onclick="cargarIframe(), mostrarSeccion('inventario')">📊 Inventario</button>
   </div>
 
   <div class="content" id="main-content">
@@ -148,30 +174,102 @@
     <div class="card" id="productos" style="display:none;">
       <h3>🔍 Ver productos</h3>
       <p>Aquí se mostrarán los productos almacenados.</p>
+      
     </div>
-
-    <div class="card" id="inventario" style="display:none;">
-      <h3>📊 Resumen / Inventario</h3>
-      <p>Aquí podrá ver el resumen del inventario actual, productos con poco stock, etc.</p>
-    </div>
-
     <div id="contenedor-tabla"></div>
+    <div id="inventario"></div>
   </div>
 
   <script>
-    function mostrarSeccion(id) {//comentarios
-      const secciones = ['dashboard', 'productos', 'inventario'];
+      function mostrarFormularioEdicion() {
+        mostrarSeccion(null); // Oculta las otras secciones
+        const main = document.getElementById("main-content");
+        main.innerHTML = `
+        <iframe src="editarproducto.html" id="iframe-editar" style="width: 100%; height: 650px; border: none;"></iframe>
+        `;
+        }
+    // Función para mostrar/ocultar secciones
+    function mostrarSeccion(id) {
+      const secciones = ['dashboard', 'productos', 'inventario', 'contenedor-tabla'];
       secciones.forEach(sec => {
-        document.getElementById(sec).style.display = (sec === id) ? 'block' : 'none';
+        const elemento = document.getElementById(sec);
+        if (elemento) {
+          elemento.style.display = (sec === id) ? 'block' : 'none';
+        }
       });
+      
+      if (id==='contenedor-tabla') {
+          const inventario = document.getElementById('inventario');
+        inventario.innerHTML = '';
+}
+      // Limpia el contenido del iframe al cambiar de sección
+      if (id !== 'inventario') {
+        const inventario = document.getElementById('inventario');
+        inventario.innerHTML = '';
+      }
+      
+      
+      if (id === 'inventario') {
+        const div = document.getElementById('main-content');
+        div.style.padding = "0px";
+      } else {
+        const div = document.getElementById('main-content');
+        div.style.padding = "40px";
+      }
+
+      if (id !== 'productos') {
+        document.getElementById('contenedor-tabla').innerHTML = '';
+      }
     }
 
+    // Función para mostrar/ocultar el menú desplegables
     function toggleDropdown() {
       const dropdown = document.getElementById("dropdownProductos");
       dropdown.classList.toggle("show");
     }
 
-    function mostrarFormularioEliminar() {
+ 
+
+    // Función para eliminar un producto
+    function eliminarProducto(id) {
+      if (!confirm(`¿Deseas eliminar el producto con ID ${id}?`)) return;
+
+      fetch(`EliminarProducto/${id}`, {
+        method: 'DELETE'
+      })
+      .then(response => {
+        if (response.ok) {
+          alert("Producto eliminado correctamente.");
+          mostrarTablaProductos();
+        } else {
+          alert("Error al eliminar el producto.");
+        }
+      })
+      .catch(error => {
+        console.error("Error al eliminar:", error);
+      });
+
+    // Función para cargar el iframe del inventario
+    function cargarIframe() {
+      mostrarSeccion('inventario');
+      const contenedor = document.getElementById('inventario');
+      contenedor.innerHTML = '';
+      contenedor.style.padding = "0px";
+
+      const iframe = document.createElement('iframe');
+      iframe.id = 'visor';
+      iframe.setAttribute("scrolling", "no");
+      iframe.style.overflow = "hidden";
+      iframe.style.border = "none";
+      iframe.width = "100%";
+      iframe.height = "100%";
+      iframe.src = 'inventario.html';
+
+      contenedor.appendChild(iframe);
+    }
+  </script>
+  <script >
+      function mostrarFormularioEliminar() {
       const contenedor = document.getElementById('contenedor-tabla');
       contenedor.innerHTML = `
         <div class="card">
@@ -191,7 +289,7 @@
         return;
       }
 
-      fetch(`buscar-producto?id=${id}`)
+      fetch(buscar-producto?id=${id})
         .then(response => {
           if (!response.ok) throw new Error("Producto no encontrado.");
           return response.json();
@@ -218,13 +316,13 @@
           `;
         })
         .catch(error => {
-          document.getElementById('resultadoProducto').innerHTML = `<p style="color:red;">${error.message}</p>`;
+          document.getElementById('resultadoProducto').innerHTML = <p style="color:red;">${error.message}</p>;
         });
     }
 
     function eliminarProducto(id) {
       if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-        fetch(`eliminar-producto?id=${id}`, {
+        fetch(eliminar-producto?id=${id}, {
           method: "DELETE"
         })
         .then(response => {

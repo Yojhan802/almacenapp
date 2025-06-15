@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Producto</title>
+  <style>
+    body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #001f3f; /* Azul marino */
+  color: #fff;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  max-width: 600px;
+  margin: auto;
+  color: #000;
+}
+
+h2, h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+button {
+  background-color: #2980b9;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:hover {
+  background-color: #1c5980;
+}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>✏️ Editar Producto</h2>
+
+    <form onsubmit="return buscarProductoPorIdEditar()">
+      <label for="idBuscar">Ingrese el ID del producto:</label>
+      <input type="number" id="idBuscar" required>
+      <button type="submit">Buscar</button>
+    </form>
+
+    <div id="editarFormulario">
+      <!-- Aquí se cargará el formulario para editar -->
+    </div>
+  </div>
+
+  <script>
+    function buscarProductoPorIdEditar() {
+      const id = document.getElementById('idBuscar').value;
+
+      fetch(`producto/${id}`)
+        .then(res => {
+          if (!res.ok) throw new Error("No encontrado");
+          return res.json();
+        })
+        .then(producto => {
+          mostrarFormularioConDatos(producto);
+        })
+        .catch(err => {
+          alert("❌ Producto no encontrado.");
+          console.error(err);
+        });
+
+      return false;
+    }
+
+    function mostrarFormularioConDatos(producto) {
+      const contenedor = document.getElementById('editarFormulario');
+      contenedor.style.display = 'block';
+      contenedor.innerHTML = `
+        <form onsubmit="return guardarCambiosProducto(${producto.id})">
+          <label for="edit-nombre">Nombre:</label>
+          <input type="text" id="edit-nombre" value="${producto.nombre}" required>
+
+          <label for="edit-precio">Precio:</label>
+          <input type="number" id="edit-precio" value="${producto.precio}" step="0.01" required>
+
+          <label for="edit-stock">Stock:</label>
+          <input type="number" id="edit-stock" value="${producto.stock}" required>
+
+          <button type="submit">Guardar Cambios</button>
+        </form>
+      `;
+    }
+
+    function guardarCambiosProducto(id) {
+      const productoEditado = {
+        id,
+        nombre: document.getElementById('edit-nombre').value,
+        precio: parseFloat(document.getElementById('edit-precio').value),
+        stock: parseInt(document.getElementById('edit-stock').value)
+      };
+
+      fetch('producto', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productoEditado)
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Error al actualizar");
+        alert("✅ Producto actualizado correctamente.");
+      })
+      .catch(err => {
+        alert("❌ No se pudo guardar.");
+        console.error(err);
+      });
+
+      return false;
+    }
+  </script>
+</body>
+</html>
