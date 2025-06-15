@@ -4,64 +4,237 @@
   <meta charset="UTF-8">
   <title>Editar Producto</title>
   <style>
+    :root {
+      --primary-dark: rgb(33, 47, 60);
+      --primary-color: rgb(44, 62, 80);
+      --primary-light: rgb(58, 83, 107);
+      --accent-color: rgb(52, 152, 219);
+      --metal-gradient: linear-gradient(145deg, 
+          rgba(255,255,255,0.15), 
+          rgba(255,255,255,0.05), 
+          rgba(0,0,0,0.1),
+          rgba(255,255,255,0.1));
+      --text-primary: rgba(255, 255, 255, 0.9);
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --error-color: rgba(231, 76, 60, 0.9);
+      --success-color: rgba(46, 204, 113, 0.9);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.25);
+      --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.3);
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     body {
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 20px;
-  background-color: #001f3f; /* Azul marino */
-  color: #fff;
-}
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--primary-dark);
+      color: var(--text-primary);
+      background-image: 
+          radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03) 0%, transparent 25%),
+          radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03) 0%, transparent 25%);
+    }
 
-.card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  max-width: 600px;
-  margin: auto;
-  color: #000;
-}
+    .card {
+      background: var(--primary-color);
+      background-image: var(--metal-gradient);
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      padding: 2.5rem;
+      width: 90%;
+      max-width: 600px;
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
 
-h2, h3 {
-  color: #2c3e50;
-  margin-bottom: 20px;
-  text-align: center;
-}
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    }
 
-label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: bold;
-}
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(to right, 
+          transparent, 
+          var(--accent-color), 
+          transparent);
+    }
 
-input[type="text"],
-input[type="number"] {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
+    h2 {
+      color: var(--text-primary);
+      margin: 0 0 2rem 0;
+      font-size: 1.8rem;
+      text-align: center;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      position: relative;
+      padding-bottom: 1rem;
+    }
 
-button {
-  background-color: #2980b9;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: var(--accent-color);
+      border-radius: 3px;
+    }
 
-button:hover {
-  background-color: #1c5980;
-}
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.9rem;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+    }
+
+    button {
+      background: var(--accent-color);
+      background-image: var(--metal-gradient);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+      margin-top: 0.5rem;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    button:hover {
+      background-color: rgb(41, 128, 185);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+          to bottom right, 
+          rgba(255,255,255,0) 0%, 
+          rgba(255,255,255,0) 45%, 
+          rgba(255,255,255,0.15) 50%, 
+          rgba(255,255,255,0) 55%, 
+          rgba(255,255,255,0) 100%
+      );
+      transform: rotate(30deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      20% { transform: translateX(100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
+    }
+
+    #editarFormulario {
+      margin-top: 2rem;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .status-message {
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      text-align: center;
+      font-weight: 500;
+      display: none;
+    }
+
+    .error {
+      background-color: var(--error-color);
+      display: block;
+      animation: pulse 2s infinite;
+    }
+
+    .success {
+      background-color: var(--success-color);
+      display: block;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        padding: 1.5rem;
+      }
+      
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="card">
     <h2>✏️ Editar Producto</h2>
+
+    <div id="statusMessage" class="status-message"></div>
 
     <form onsubmit="return buscarProductoPorIdEditar()">
       <label for="idBuscar">Ingrese el ID del producto:</label>
@@ -75,8 +248,24 @@ button:hover {
   </div>
 
   <script>
+    function showMessage(message, isError = true) {
+      const statusEl = document.getElementById('statusMessage');
+      statusEl.textContent = message;
+      statusEl.className = isError ? 'status-message error' : 'status-message success';
+      
+      if (!isError) {
+        setTimeout(() => {
+          statusEl.style.display = 'none';
+        }, 3000);
+      }
+    }
+
     function buscarProductoPorIdEditar() {
       const id = document.getElementById('idBuscar').value;
+      if (!id) {
+        showMessage("❌ Por favor ingrese un ID válido");
+        return false;
+      }
 
       fetch(`producto/${id}`)
         .then(res => {
@@ -84,10 +273,11 @@ button:hover {
           return res.json();
         })
         .then(producto => {
+          showMessage("", false);
           mostrarFormularioConDatos(producto);
         })
         .catch(err => {
-          alert("❌ Producto no encontrado.");
+          showMessage("❌ Producto no encontrado");
           console.error(err);
         });
 
@@ -108,7 +298,7 @@ button:hover {
           <label for="edit-stock">Stock:</label>
           <input type="number" id="edit-stock" value="${producto.stock}" required>
 
-          <button type="submit">Guardar Cambios</button>
+          <button type="submit">💾 Guardar Cambios</button>
         </form>
       `;
     }
@@ -128,10 +318,10 @@ button:hover {
       })
       .then(res => {
         if (!res.ok) throw new Error("Error al actualizar");
-        alert("✅ Producto actualizado correctamente.");
+        showMessage("✅ Producto actualizado correctamente", false);
       })
       .catch(err => {
-        alert("❌ No se pudo guardar.");
+        showMessage("❌ No se pudo guardar los cambios");
         console.error(err);
       });
 

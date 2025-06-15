@@ -10,7 +10,16 @@
       --input-bg: rgb(60, 75, 95);        /* Fondo campos */
       --accent: rgb(52, 152, 219);                  /* Verde-agua para botones o enfoque */
       --text-light: #ecf0f1;              /* Texto claro */
-      --border: #7f8c8d;                  /* Bordes grises suaves */
+      --border: #7f8c8d;    
+      --accent-color: rgb(52, 152, 219);
+            --metal-gradient: linear-gradient(145deg, 
+                rgba(255,255,255,0.15), 
+                rgba(255,255,255,0.05), 
+                rgba(0,0,0,0.1),
+                rgba(255,255,255,0.1));
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.25);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);/* Bordes grises suaves */
     }
 
     * {
@@ -71,20 +80,54 @@
     }
 
     .btn-azul {
-      background-color: var(--accent);
-      color: var(--primary);
-      padding: 12px 18px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
+      background: var(--accent-color);
+            background-image: var(--metal-gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
     }
 
     .btn-azul:hover {
-      background-color: rgb(52, 152, 219);
+      background-color: rgb(41, 128, 185);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
     }
+    .btn-azul:active {
+            transform: translateY(0);
+        }
+
+        .btn-azul::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0) 45%, 
+                rgba(255,255,255,0.15) 50%, 
+                rgba(255,255,255,0) 55%, 
+                rgba(255,255,255,0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            20% { transform: translateX(100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
   </style>
 </head>
 <body>

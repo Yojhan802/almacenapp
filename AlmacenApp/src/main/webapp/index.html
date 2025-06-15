@@ -48,7 +48,6 @@
 
     .content {
       flex: 1;
-      padding: 40px;
       background: linear-gradient(to bottom right, #f0f2f5, #e6ecf1);
       display: flex;
       flex-direction: column;
@@ -69,7 +68,6 @@
     .card {
       background: white;
       border-radius: 12px;
-      padding: 20px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       margin-bottom: 20px;
       animation: fadeIn 0.4s ease;
@@ -155,27 +153,18 @@
 <body>
   <div class="sidebar">
     <h2>📦 Almacén</h2>
-    <button onclick="mostrarSeccion('dashboard')">🏠 Dashboard</button>
+    <button onclick="mostrarFormularioEdicion('editarproducto','inicio.html')">🏠 Dashboard</button>
     <button onclick="toggleDropdown()">🛠 Gestionar Productos</button>
     <div class="dropdown" id="dropdownProductos">
         <div class="crud-item" onclick="mostrarFormularioEdicion('editarproducto','agregar.html')">➕ Agregar producto</div>
       <div class="crud-item" onclick="mostrarFormularioEdicion('editarproducto','editarproducto.html')">✏️ Editar producto</div>
-      <div class="crud-item" onclick="mostrarSeccion('contenedor-tabla'), mostrarFormularioEliminar()">🗑️ Eliminar producto</div>
+      <div class="crud-item" onclick="mostrarFormularioEdicion('editarproducto','eliminar.html')">🗑️ Eliminar producto</div>
     </div>
     <button onclick="cargarIframe(), mostrarSeccion('inventario')">📊 Inventario</button>
   </div>
 
   <div class="content" id="main-content">
-    <div class="card" id="dashboard">
-      <h3>Bienvenido al sistema de almacén</h3>
-      <p>Seleccione una opción del panel lateral para comenzar.</p>
-    </div>
-
-    <div class="card" id="productos" style="display:none;">
-      <h3>🔍 Ver productos</h3>
-      <p>Aquí se mostrarán los productos almacenados.</p>
-      
-    </div>
+    
     <div id="contenedor-tabla"></div>
     <div id="inventario"></div>
     <div class="card" id="editarproducto" style="display:none;"></div>
@@ -187,7 +176,7 @@
   const contenedor = document.getElementById(id);
   contenedor.innerHTML = `
     
-    <iframe src="${url}" style="width: 100%; height: 650px; border: none;"></iframe>
+    <iframe src="${url}" style="width: 100%; height: 100vh; border: none;"></iframe>
   `;
 }
     // Función para mostrar/ocultar secciones
@@ -214,10 +203,7 @@
       if (id === 'inventario') {
         const div = document.getElementById('main-content');
         div.style.padding = "0px";
-      } else {
-        const div = document.getElementById('main-content');
-        div.style.padding = "40px";
-      }
+      } 
 
       if (id !== 'productos') {
         document.getElementById('contenedor-tabla').innerHTML = '';
@@ -233,24 +219,7 @@
  
 
     // Función para eliminar un producto
-    function eliminarProducto(id) {
-      if (!confirm(`¿Deseas eliminar el producto con ID ${id}?`)) return;
-
-      fetch(`EliminarProducto/${id}`, {
-        method: 'DELETE'
-      })
-      .then(response => {
-        if (response.ok) {
-          alert("Producto eliminado correctamente.");
-          mostrarTablaProductos();
-        } else {
-          alert("Error al eliminar el producto.");
-        }
-      })
-      .catch(error => {
-        console.error("Error al eliminar:", error);
-      });
-    }
+   
 
     // Función para cargar el iframe del inventario
     function cargarIframe() {
@@ -272,75 +241,11 @@
     }
   </script>
   <script >
-      function mostrarFormularioEliminar() {
-      const contenedor = document.getElementById('contenedor-tabla');
-      contenedor.innerHTML = `
-        <div class="card">
-          <h3>Eliminar producto</h3>
-          <label for="idInput">Ingrese el ID del producto:</label>
-          <input type="number" id="idInput" placeholder="Ej: 1" style="margin: 10px 0; padding: 5px;">
-          <button onclick="buscarProductoPorId()">Buscar</button>
-          <div id="resultadoProducto"></div>
-        </div>
-      `;
-    }
+      
 
-    function buscarProductoPorId() {
-      const id = document.getElementById('idInput').value;
-      if (!id) {
-        alert("Ingrese un ID válido.");
-        return;
-      }
+    
 
-      fetch(`buscar-producto?id=${id}`)
-        .then(response => {
-          if (!response.ok) throw new Error("Producto no encontrado.");
-          return response.json();
-        })
-        .then(producto => {
-          const resultadoDiv = document.getElementById('resultadoProducto');
-          resultadoDiv.innerHTML = `
-            <table class="product-table">
-              <thead>
-                <tr>
-                  <th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>${producto.id}</td>
-                  <td>${producto.nombre}</td>
-                  <td>${producto.precio}</td>
-                  <td>${producto.stock}</td>
-                  <td><button onclick="eliminarProducto(${producto.id})">Eliminar</button></td>
-                </tr>
-              </tbody>
-            </table>
-          `;
-        })
-        .catch(error => {
-          document.getElementById('resultadoProducto').innerHTML = `<p style="color:red;">${error.message}</p>`;
-        });
-    }
-
-    function eliminarProducto(id) {
-      if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-        fetch(`eliminar-producto?id=${id}`, {
-          method: "DELETE"
-        })
-        .then(response => {
-          if (response.ok) {
-            alert("Producto eliminado correctamente.");
-            document.getElementById('resultadoProducto').innerHTML = '';
-          } else {
-            alert("No se pudo eliminar el producto.");
-          }
-        })
-        .catch(error => {
-          console.error("Error al eliminar producto:", error);
-        });
-      }
-    }
+    
   </script>
 </body>
 </html>

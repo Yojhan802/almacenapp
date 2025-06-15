@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión de Productos</title>
+  <style>
+    :root {
+      --primary-dark: #0a1a2a;
+      --primary-color: #142a42;
+      --primary-light: #1e3a5a;
+      --accent-color: #2d4d7a;
+      --metal-gradient: linear-gradient(145deg, 
+          rgba(255,255,255,0.1), 
+          rgba(255,255,255,0.05), 
+          rgba(0,0,0,0.1),
+          rgba(255,255,255,0.05));
+      --text-primary: rgba(255, 255, 255, 0.95);
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.4);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @font-face {
+      font-family: 'Titillium Web';
+      src: url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap');
+    }
+
+    body {
+      font-family: 'Titillium Web', 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--primary-dark);
+      color: var(--text-primary);
+      background-image: 
+          radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03) 0%, transparent 25%),
+          radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03) 0%, transparent 25%),
+          url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPjwvc3ZnPg==');
+      overflow-x: hidden;
+    }
+
+    .portada-container {
+      width: 90%;
+      max-width: 1000px;
+      perspective: 1000px;
+    }
+
+    .portada-card {
+      background: var(--primary-color);
+      background-image: var(--metal-gradient);
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: var(--transition);
+      border: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+    }
+
+    .portada-card:hover {
+      transform: translateY(-10px) rotateX(5deg);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+
+    .portada-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(to right, 
+          transparent, 
+          var(--accent-color), 
+          transparent);
+    }
+
+    .logo-container {
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-escudo {
+      width: 180px;
+      height: 180px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+    }
+
+    .logo-escudo img {
+      width: 100%;
+      height: auto;
+      max-width: 180px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin: 0 0 1rem 0;
+      color: var(--text-primary);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 1;
+      letter-spacing: 1px;
+    }
+
+    h1::after {
+      content: '';
+      display: block;
+      width: 100px;
+      height: 4px;
+      background: var(--accent-color);
+      margin: 1rem auto;
+      border-radius: 2px;
+    }
+
+    .slogan {
+      font-size: 1.4rem;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+      position: relative;
+      z-index: 1;
+      font-weight: 300;
+    }
+
+    .descripcion {
+      max-width: 700px;
+      margin: 0 auto 3rem;
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      position: relative;
+      z-index: 1;
+    }
+
+    .descripcion p {
+      margin: 0.5rem 0;
+    }
+
+    .btn-ingresar {
+      background: var(--accent-color);
+      background-image: var(--metal-gradient);
+      color: white;
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .btn-ingresar:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 20px rgba(45, 77, 122, 0.3);
+    }
+
+    .btn-ingresar:active {
+      transform: translateY(0);
+    }
+
+    .btn-ingresar::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+          to bottom right, 
+          rgba(255,255,255,0) 0%, 
+          rgba(255,255,255,0) 45%, 
+          rgba(255,255,255,0.15) 50%, 
+          rgba(255,255,255,0) 55%, 
+          rgba(255,255,255,0) 100%
+      );
+      transform: rotate(30deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      20% { transform: translateX(100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
+    }
+
+    .footer-text {
+      margin-top: 3rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      opacity: 0.8;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .slogan {
+        font-size: 1.2rem;
+      }
+      
+      .portada-card {
+        padding: 2rem 1.5rem;
+      }
+      
+      .logo-escudo {
+        width: 140px;
+        height: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="portada-container">
+    <div class="portada-card">
+      
+      <div class="logo-container">
+        <div class="logo-escudo">
+          <!-- Logo oficial de Alianza Lima -->
+          <img src="https://logotyp.us/file/alianza-lima.svg" alt="Escudo Alianza Lima">
+        </div>
+      </div>
+      
+      <h1>BIENVENIDO</h1>
+      <div class="slogan">Sistema de Gestión de Productos</div>
+      
+      <div class="descripcion">
+        <p>Herramienta profesional para el control de inventario, gestión de productos y análisis</p>
+        <p>de errores y tolerancias. Diseñado con la precisión y pasión que caracteriza al club Alianza Lima.</p>
+      </div>
+      
+      <button class="btn-ingresar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M10 12a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+          <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+        </svg>
+        INGRESAR AL SISTEMA
+      </button>
+      
+      <div class="footer-text">
+        "Con la misma pasión que defendemos nuestra camiseta, gestionamos la calidad de sus productos"
+      </div>
+    </div>
+  </div>
+</body>
+</html>

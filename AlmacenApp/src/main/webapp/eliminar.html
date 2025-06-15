@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Eliminar Producto</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary-dark: rgb(33, 47, 60);
+            --primary-color: rgb(44, 62, 80);
+            --primary-light: rgb(58, 83, 107);
+            --accent-color: rgb(52, 152, 219);
+            --metal-gradient: linear-gradient(145deg, 
+                rgba(255,255,255,0.15), 
+                rgba(255,255,255,0.05), 
+                rgba(0,0,0,0.1),
+                rgba(255,255,255,0.1));
+            --text-primary: rgba(255, 255, 255, 0.9);
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --error-color: rgba(231, 76, 60, 0.9);
+            --success-color: rgba(46, 204, 113, 0.9);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.25);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--primary-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255,255,255,0.03) 0%, transparent 20%);
+        }
+
+        .card {
+            background: var(--primary-color);
+            background-image: var(--metal-gradient);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            width: 90%;
+            max-width: 600px;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, 
+                transparent, 
+                var(--accent-color), 
+                transparent);
+        }
+
+        h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--accent-color);
+        }
+
+        label {
+            display: block;
+            margin: 1rem 0 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        input {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            padding: 0.75rem;
+            width: 100%;
+            box-sizing: border-box;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+        }
+
+        button {
+            background: var(--accent-color);
+            background-image: var(--metal-gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background-color: rgb(41, 128, 185);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0) 45%, 
+                rgba(255,255,255,0.15) 50%, 
+                rgba(255,255,255,0) 55%, 
+                rgba(255,255,255,0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            20% { transform: translateX(100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+
+        #resultadoProducto {
+            margin-top: 1.5rem;
+        }
+
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .product-table th {
+            background: var(--primary-light);
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .product-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .product-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .product-table tr:hover td {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .product-table button {
+            margin: 0;
+            padding: 0.5rem 1rem;
+            background: var(--error-color);
+        }
+
+        .product-table button:hover {
+            background: rgb(192, 57, 43);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            padding: 0.75rem;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 6px;
+            margin-top: 1rem;
+            border-left: 3px solid var(--error-color);
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 1.5rem;
+            }
+            
+            h3 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h3>Eliminar producto</h3>
+        <label for="idInput">Ingrese el ID del producto:</label>
+        <input type="number" id="idInput" placeholder="Ej: 1">
+        <button onclick="buscarProductoPorId()">Buscar</button>
+        <div id="resultadoProducto"></div>
+    </div>
+
+    <script>
+        function buscarProductoPorId() {
+            const id = document.getElementById('idInput').value;
+            if (!id) {
+                alert("Ingrese un ID válido.");
+                return;
+            }
+
+            fetch(`buscar-producto?id=${id}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Producto no encontrado.");
+                    return response.json();
+                })
+                .then(producto => {
+                    const resultadoDiv = document.getElementById('resultadoProducto');
+                    resultadoDiv.innerHTML = `
+                        <table class="product-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>${producto.id}</td>
+                                    <td>${producto.nombre}</td>
+                                    <td>${producto.precio}</td>
+                                    <td>${producto.stock}</td>
+                                    <td><button onclick="eliminarProducto(${producto.id})">Eliminar</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    `;
+                })
+                .catch(error => {
+                    document.getElementById('resultadoProducto').innerHTML = 
+                        `<div class="error-message">${error.message}</div>`;
+                });
+        }
+        
+        function eliminarProducto(id) {
+            if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+                fetch(`eliminar-producto?id=${id}`, {
+                    method: "DELETE"
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Producto eliminado correctamente.");
+                        document.getElementById('resultadoProducto').innerHTML = '';
+                    } else {
+                        alert("No se pudo eliminar el producto.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al eliminar producto:", error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

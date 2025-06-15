@@ -10,12 +10,17 @@
       --primary-color: rgb(44, 62, 80);
       --primary-light: rgb(58, 83, 107);
       --accent-color: rgb(52, 152, 219);
+      --metal-gradient: linear-gradient(145deg, 
+          rgba(255,255,255,0.15), 
+          rgba(255,255,255,0.05), 
+          rgba(0,0,0,0.1),
+          rgba(255,255,255,0.1));
       --text-primary: rgba(255, 255, 255, 0.9);
       --text-secondary: rgba(255, 255, 255, 0.7);
       --error-color: rgba(231, 76, 60, 0.9);
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
-      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.16);
-      --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.25);
+      --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.3);
       --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -28,19 +33,38 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      line-height: 1.5;
+      line-height: 1.6;
+      background-image: 
+          radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03) 0%, transparent 25%),
+          radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03) 0%, transparent 25%);
     }
 
     header {
       background-color: var(--primary-color);
+      background-image: var(--metal-gradient);
       padding: 1.5rem;
       text-align: center;
       box-shadow: var(--shadow-md);
       position: relative;
       z-index: 10;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: 600;
       letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(to right, 
+          transparent, 
+          var(--accent-color), 
+          transparent);
     }
 
     .container {
@@ -53,10 +77,11 @@
 
     .btn-cargar {
       background-color: var(--accent-color);
+      background-image: var(--metal-gradient);
       color: white;
       border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 6px;
+      padding: 0.85rem 1.75rem;
+      border-radius: 8px;
       font-size: 1rem;
       font-weight: 500;
       cursor: pointer;
@@ -66,17 +91,43 @@
       align-items: center;
       gap: 0.5rem;
       margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
     }
 
     .btn-cargar:hover {
       background-color: rgb(41, 128, 185);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
       box-shadow: var(--shadow-md);
     }
 
     .btn-cargar:active {
       transform: translateY(0);
-      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-cargar::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+          to bottom right, 
+          rgba(255,255,255,0) 0%, 
+          rgba(255,255,255,0) 45%, 
+          rgba(255,255,255,0.2) 50%, 
+          rgba(255,255,255,0) 55%, 
+          rgba(255,255,255,0) 100%
+      );
+      transform: rotate(30deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      20% { transform: translateX(100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
     }
 
     #error {
@@ -84,43 +135,78 @@
       background-color: var(--error-color);
       color: white;
       padding: 1rem;
-      border-radius: 6px;
+      border-radius: 8px;
       margin-bottom: 1.5rem;
       font-weight: 500;
       box-shadow: var(--shadow-sm);
       animation: pulse 2s infinite;
+      border-left: 4px solid rgba(255,255,255,0.3);
     }
 
     @keyframes pulse {
-      0% { opacity: 0.95; }
-      50% { opacity: 1; }
-      100% { opacity: 0.95; }
+      0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
     }
 
     #tablaProductos {
       width: 100%;
       border-collapse: collapse;
       background-color: var(--primary-color);
-      border-radius: 8px;
+      background-image: var(--metal-gradient);
+      border-radius: 10px;
       overflow: hidden;
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    #tablaProductos::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(to right, 
+          transparent, 
+          rgba(255,255,255,0.3), 
+          transparent);
     }
 
     #tablaProductos th {
       background-color: var(--primary-light);
+      background-image: linear-gradient(to bottom, 
+          rgba(0,0,0,0.2), 
+          rgba(0,0,0,0.1));
       color: var(--text-primary);
-      padding: 1rem;
+      padding: 1.1rem;
       text-align: left;
       font-weight: 600;
       text-transform: uppercase;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       letter-spacing: 0.5px;
+      position: relative;
+    }
+
+    #tablaProductos th::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 10%;
+      width: 80%;
+      height: 1px;
+      background: linear-gradient(to right, 
+          transparent, 
+          rgba(255,255,255,0.2), 
+          transparent);
     }
 
     #tablaProductos td {
-      padding: 1rem;
+      padding: 1.1rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       color: var(--text-secondary);
+      position: relative;
     }
 
     #tablaProductos tr:last-child td {
@@ -128,8 +214,34 @@
     }
 
     #tablaProductos tr:hover td {
-      background-color: rgba(255, 255, 255, 0.05);
+      background-color: rgba(255, 255, 255, 0.08);
       color: var(--text-primary);
+    }
+
+    #tablaProductos td::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 10%;
+      width: 80%;
+      height: 1px;
+      background: linear-gradient(to right, 
+          transparent, 
+          rgba(255,255,255,0.1), 
+          transparent);
+    }
+
+    .mirror-effect {
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
+      transform: scaleY(-1);
+      opacity: 0.5;
+      pointer-events: none;
+      border-radius: 0 0 15px 15px;
     }
 
     @media (max-width: 768px) {
@@ -137,9 +249,15 @@
         padding: 0 1rem;
       }
       
+      header {
+        font-size: 1.5rem;
+        padding: 1.2rem;
+      }
+      
       #tablaProductos th,
       #tablaProductos td {
-        padding: 0.75rem;
+        padding: 0.85rem;
+        font-size: 0.9rem;
       }
     }
   </style>
@@ -161,6 +279,7 @@
       </thead>
       <tbody></tbody>
     </table>
+    <div class="mirror-effect"></div>
   </div>
 
   <script>
@@ -191,8 +310,18 @@
         });
     }
 
-    // Cargar productos al iniciar
-    document.addEventListener('DOMContentLoaded', cargarProductos);
+    // Efecto de carga inicial
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('.container').style.opacity = '0';
+      document.querySelector('.container').style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        document.querySelector('.container').style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        document.querySelector('.container').style.opacity = '1';
+        document.querySelector('.container').style.transform = 'translateY(0)';
+        cargarProductos();
+      }, 100);
+    });
   </script>
 </body>
 </html>
