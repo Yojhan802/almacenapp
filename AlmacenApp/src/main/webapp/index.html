@@ -182,12 +182,12 @@
 
   <script>
       function mostrarFormularioEdicion() {
-        mostrarSeccion(null); // Oculta las otras secciones
-        const main = document.getElementById("main-content");
-        main.innerHTML = `
-        <iframe src="editarproducto.html" id="iframe-editar" style="width: 100%; height: 650px; border: none;"></iframe>
-        `;
-        }
+  mostrarSeccion(null); // Oculta las otras secciones
+  const main = document.getElementById("main-content");
+  main.innerHTML = `
+    <iframe src="editarproducto.html" id="iframe-editar" style="width: 100%; height: 650px; border: none;"></iframe>
+  `;
+}
     // Función para mostrar/ocultar secciones
     function mostrarSeccion(id) {
       const secciones = ['dashboard', 'productos', 'inventario', 'contenedor-tabla'];
@@ -248,6 +248,7 @@
       .catch(error => {
         console.error("Error al eliminar:", error);
       });
+    }
 
     // Función para cargar el iframe del inventario
     function cargarIframe() {
@@ -289,7 +290,7 @@
         return;
       }
 
-      fetch(buscar-producto?id=${id})
+      fetch(`buscar-producto?id=${id}`)
         .then(response => {
           if (!response.ok) throw new Error("Producto no encontrado.");
           return response.json();
@@ -316,13 +317,13 @@
           `;
         })
         .catch(error => {
-          document.getElementById('resultadoProducto').innerHTML = <p style="color:red;">${error.message}</p>;
+          document.getElementById('resultadoProducto').innerHTML = `<p style="color:red;">${error.message}</p>`;
         });
     }
 
     function eliminarProducto(id) {
       if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-        fetch(eliminar-producto?id=${id}, {
+        fetch(`eliminar-producto?id=${id}`, {
           method: "DELETE"
         })
         .then(response => {
