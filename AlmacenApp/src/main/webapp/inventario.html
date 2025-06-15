@@ -2,97 +2,149 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Almacén</title>
   <style>
+    :root {
+      --primary-dark: rgb(33, 47, 60);
+      --primary-color: rgb(44, 62, 80);
+      --primary-light: rgb(58, 83, 107);
+      --accent-color: rgb(52, 152, 219);
+      --text-primary: rgba(255, 255, 255, 0.9);
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --error-color: rgba(231, 76, 60, 0.9);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.16);
+      --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19);
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       margin: 0;
-      background: linear-gradient(to right, rgb(63, 94, 251), rgb(252, 70, 107));
+      padding: 0;
+      background-color: var(--primary-dark);
+      color: var(--text-primary);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      line-height: 1.5;
     }
 
     header {
-      width: 100%;
-      padding: 20px;
+      background-color: var(--primary-color);
+      padding: 1.5rem;
       text-align: center;
-      color: white;
-      font-size: 30px;
-      font-weight: bold;
-      background-color: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(6px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      z-index: 10;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
-      margin-top: 40px;
-      padding: 30px;
-      width: 90%;
-      max-width: 800px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .btn-cargar {
-      background: rgba(255, 255, 255, 0.2);
+      background-color: var(--accent-color);
       color: white;
-      border: 2px solid white;
-      padding: 12px 25px;
-      border-radius: 8px;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 500;
       cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s ease;
-      margin-bottom: 20px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
     }
 
     .btn-cargar:hover {
-      background: rgba(255, 255, 255, 0.4);
+      background-color: rgb(41, 128, 185);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-cargar:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-sm);
     }
 
     #error {
       display: none;
+      background-color: var(--error-color);
       color: white;
-      background-color: rgba(255, 0, 0, 0.5);
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      font-weight: bold;
-      text-align: center;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
+      animation: pulse 2s infinite;
     }
 
-    table {
+    @keyframes pulse {
+      0% { opacity: 0.95; }
+      50% { opacity: 1; }
+      100% { opacity: 0.95; }
+    }
+
+    #tablaProductos {
       width: 100%;
       border-collapse: collapse;
-      background-color: rgba(255, 255, 255, 0.15);
-      border-radius: 12px;
+      background-color: var(--primary-color);
+      border-radius: 8px;
       overflow: hidden;
+      box-shadow: var(--shadow-md);
     }
 
-    th, td {
-      padding: 15px;
+    #tablaProductos th {
+      background-color: var(--primary-light);
+      color: var(--text-primary);
+      padding: 1rem;
       text-align: left;
-      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
     }
 
-    th {
-      background-color: rgba(0, 0, 0, 0.3);
+    #tablaProductos td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
     }
 
-    tr:nth-child(even) {
+    #tablaProductos tr:last-child td {
+      border-bottom: none;
+    }
+
+    #tablaProductos tr:hover td {
       background-color: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
     }
 
-    tr:hover {
-      background-color: rgba(255, 255, 255, 0.2);
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
+      }
+      
+      #tablaProductos th,
+      #tablaProductos td {
+        padding: 0.75rem;
+      }
     }
   </style>
 </head>
 <body>
-
   <header>📦 Sistema de Almacén</header>
 
   <div class="container">
@@ -101,6 +153,7 @@
     <table id="tablaProductos">
       <thead>
         <tr>
+          <th>Id</th>
           <th>Producto</th>
           <th>Stock</th>
           <th>Precio (S/)</th>
@@ -124,6 +177,7 @@
           data.forEach(p => {
             const row = document.createElement("tr");
             row.innerHTML = `
+              <td>${p.id}</td>
               <td>${p.nombre}</td>
               <td>${p.stock}</td>
               <td>${p.precio}</td>
@@ -136,7 +190,9 @@
           setTimeout(cargarProductos, 5000);
         });
     }
-  </script>
 
+    // Cargar productos al iniciar
+    document.addEventListener('DOMContentLoaded', cargarProductos);
+  </script>
 </body>
 </html>

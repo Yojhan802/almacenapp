@@ -158,8 +158,8 @@
     <button onclick="mostrarSeccion('dashboard')">🏠 Dashboard</button>
     <button onclick="toggleDropdown()">🛠 Gestionar Productos</button>
     <div class="dropdown" id="dropdownProductos">
-      <div class="crud-item" onclick="alert('Agregar producto')">➕ Agregar producto</div>
-      <div class="crud-item" onclick="mostrarFormularioEdicion()">✏️ Editar producto</div>
+        <div class="crud-item" onclick="mostrarFormularioEdicion('editarproducto','agregar.html')">➕ Agregar producto</div>
+      <div class="crud-item" onclick="mostrarFormularioEdicion('editarproducto','editarproducto.html')">✏️ Editar producto</div>
       <div class="crud-item" onclick="mostrarSeccion('contenedor-tabla'), mostrarFormularioEliminar()">🗑️ Eliminar producto</div>
     </div>
     <button onclick="cargarIframe(), mostrarSeccion('inventario')">📊 Inventario</button>
@@ -182,12 +182,12 @@
   </div>
 
   <script>
-      function mostrarFormularioEdicion() {
-  mostrarSeccion('editarproducto'); // Muestra la sección específica
-  const contenedor = document.getElementById('editarproducto');
+      function mostrarFormularioEdicion(id,url) {
+  mostrarSeccion(id); // Muestra la sección específica
+  const contenedor = document.getElementById(id);
   contenedor.innerHTML = `
     
-    <iframe src="editarproducto.html" style="width: 100%; height: 650px; border: none;"></iframe>
+    <iframe src="${url}" style="width: 100%; height: 650px; border: none;"></iframe>
   `;
 }
     // Función para mostrar/ocultar secciones
