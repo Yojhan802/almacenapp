@@ -178,19 +178,21 @@
     </div>
     <div id="contenedor-tabla"></div>
     <div id="inventario"></div>
+    <div class="card" id="editarproducto" style="display:none;"></div>
   </div>
 
   <script>
       function mostrarFormularioEdicion() {
-  mostrarSeccion(null); // Oculta las otras secciones
-  const main = document.getElementById("main-content");
-  main.innerHTML = `
-    <iframe src="editarproducto.html" id="iframe-editar" style="width: 100%; height: 650px; border: none;"></iframe>
+  mostrarSeccion('editarproducto'); // Muestra la sección específica
+  const contenedor = document.getElementById('editarproducto');
+  contenedor.innerHTML = `
+    
+    <iframe src="editarproducto.html" style="width: 100%; height: 650px; border: none;"></iframe>
   `;
 }
     // Función para mostrar/ocultar secciones
     function mostrarSeccion(id) {
-      const secciones = ['dashboard', 'productos', 'inventario', 'contenedor-tabla'];
+      const secciones = ['dashboard', 'productos', 'inventario', 'contenedor-tabla','editarproducto'];
       secciones.forEach(sec => {
         const elemento = document.getElementById(sec);
         if (elemento) {
