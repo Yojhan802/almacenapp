@@ -41,39 +41,37 @@ function agregarProducto(formulario) {
     }
 
     function buscarProductoPorIdEditar() {
-      const id = document.getElementById('idBuscar').value;
-      if (!id) {
+    const id = document.getElementById('idBuscar').value;
+    if (!id) {
         showMessage("❌ Por favor ingrese un ID válido");
         return false;
-      }
+    }
 
-      fetch(`producto/${id}`)
+    fetch(`producto/${id}`)
         .then(res => {
-        if (!res.ok){
-          if (res.status >= 500) {
-            throw new Error("Error de Servidor");
-          }
-            throw new Error("No encontrado");
-          }
-            return res.json();  
+            if (!res.ok) {
+                if (res.status >= 500) {
+                    throw new Error("Error de Servidor");
+                }
+                alert("❌ Producto no encontrado");
+            }
+            return res.json();
         })
         .then(producto => {
             document.getElementById('erroreditar').style.display = 'none';
-          showMessage("", false);
-          mostrarFormularioConDatos(producto);
+            showMessage("", false);
+            mostrarFormularioConDatos(producto);
         })
-        .catch(err => {
-                if (err.message === "Error de Servidor"||err.message.includes("Fallo el fetch")) {
+            .catch(err => {
+                if (err.message === "Error de Servidor" || err.message.includes("Failed to fetch")) {
                     document.getElementById('erroreditar').style.display = 'block';
-                    setTimeout(buscarProductoPorIdEditar(),5000);
-                }else{
-                    showMessage("❌ Producto no encontrado");
+                    setTimeout(buscarProductoPorIdEditar, 5000);
                 }
-                console.error(err);
-        });
-        
-      return false;
-    }
+                console.error("Error:", err);
+            });
+    
+    return false;
+}
 
     function mostrarFormularioConDatos(producto) {
       const contenedor = document.getElementById('editarFormulario');
@@ -109,10 +107,10 @@ function agregarProducto(formulario) {
       })
       .then(res => {
         if (!res.ok) throw new Error("Error al actualizar");
-        showMessage("✅ Producto actualizado correctamente", false);
+        alert("✅ Producto actualizado correctamente", false);
       })
       .catch(err => {
-        showMessage("❌ No se pudo guardar los cambios");
+        alert("❌ No se pudo guardar los cambios");
         console.error(err);
       });
 
