@@ -244,6 +244,35 @@
       border-radius: 0 0 15px 15px;
     }
 
+    /* Estilos para el loading */
+    #loading {
+      display: none;
+      background-color: rgba(52, 152, 219, 0.2);
+      color: var(--text-primary);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      font-weight: 500;
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     @media (max-width: 768px) {
       .container {
         padding: 0 1rem;
@@ -261,13 +290,13 @@
       }
     }
   </style>
-  <script src="js/JavaScript.js"></script>
 </head>
 <body>
   <header>📦 Sistema de Almacén</header>
 
   <div class="container">
     <button class="btn-cargar" onclick="cargarProductos()">🔄 Cargar Productos</button>
+    <div id="loading"><span class="loading-spinner"></span>Cargando productos...</div>
     <div id="error">⚠ No se pudo conectar con el servidor. Reintentando en 5 segundos...</div>
     <table id="tablaProductos">
       <thead>
@@ -284,7 +313,72 @@
   </div>
 
   <script>
-    
+    let reintentos = 0;
+    const MAX_REINTENTOS = 3;
+    const TIMEOUT_FETCH = 3000; // 3 segundos para timeout de la petición
+    const RETRY_DELAY = 5000; // 5 segundos entre reintentos
+
+    function cargarProductos() {
+      const loadingElement = document.getElementById("loading");
+      const errorElement = document.getElementById("error");
+      const btnCargar = document.querySelector(".btn-cargar");
+      
+      // Mostrar indicador de carga y ocultar error
+      loadingElement.style.display = "block";
+      errorElement.style.display = "none";
+      btnCargar.disabled = true;
+      
+      // Configurar timeout para la petición
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_FETCH);
+      
+      fetch("producto", { signal: controller.signal })
+        .then(res => {
+          clearTimeout(timeoutId);
+          if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+          return res.json();
+        })
+        .then(data => {
+          loadingElement.style.display = "none";
+          btnCargar.disabled = false;
+          renderizarProductos(data);
+          reintentos = 0; // Resetear contador de reintentos si tiene éxito
+        })
+        .catch(error => {
+          clearTimeout(timeoutId);
+          loadingElement.style.display = "none";
+          btnCargar.disabled = false;
+          
+          if (reintentos < MAX_REINTENTOS) {
+            reintentos++;
+            errorElement.textContent = `⚠ Error al cargar (intento ${reintentos}/${MAX_REINTENTOS}). Reintentando en 5 segundos...`;
+            errorElement.style.display = "block";
+            setTimeout(cargarProductos, RETRY_DELAY);
+          } else {
+            errorElement.textContent = "⚠ Error: No se pudo cargar la lista de productos después de varios intentos. Por favor recarga la página.";
+            errorElement.style.display = "block";
+          }
+        });
+    }
+
+    function renderizarProductos(productos) {
+      const tbody = document.querySelector("#tablaProductos tbody");
+      tbody.innerHTML = "";
+      
+      productos.forEach(producto => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${producto.id}</td>
+          <td>${producto.nombre}</td>
+          <td>${producto.stock}</td>
+          <td>S/ ${producto.precio.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Cargar productos automáticamente al cargar la página
+    document.addEventListener('DOMContentLoaded', cargarProductos);
   </script>
 </body>
 </html>
