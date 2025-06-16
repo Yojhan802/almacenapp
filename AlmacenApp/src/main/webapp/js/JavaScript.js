@@ -49,18 +49,29 @@ function agregarProducto(formulario) {
 
       fetch(`producto/${id}`)
         .then(res => {
-          if (!res.ok) throw new Error("No encontrado");
-          return res.json();
+        if (!res.ok){
+          if (res.status >= 500) {
+            throw new Error("Error de Servidor");
+          }
+            throw new Error("No encontrado");
+          }
+            return res.json();  
         })
         .then(producto => {
+            document.getElementById('erroreditar').style.display = 'none';
           showMessage("", false);
           mostrarFormularioConDatos(producto);
         })
         .catch(err => {
-          showMessage("❌ Producto no encontrado");
-          console.error(err);
+                if (err.message === "Error de Servidor"||err.message.includes("Fallo el fetch")) {
+                    document.getElementById('erroreditar').style.display = 'block';
+                    setTimeout(buscarProductoPorIdEditar(),5000);
+                }else{
+                    showMessage("❌ Producto no encontrado");
+                }
+                console.error(err);
         });
-
+        
       return false;
     }
 

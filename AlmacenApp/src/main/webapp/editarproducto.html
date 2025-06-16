@@ -192,6 +192,18 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    .error-message {
+        display: none;
+        background-color: var(--error-color);
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+        animation: pulse 2s infinite;
+        border-left: 4px solid rgba(255,255,255,0.3);
+    }
 
     .status-message {
       padding: 1rem;
@@ -234,6 +246,7 @@
 <body>
   <div class="card">
     <h2>✏️ Editar Producto</h2>
+    <div id ="erroreditar" class ="error-message">⚠ Tenemos problemos de nuestro lado, reintentar dentro de un momento </div>
 
     <div id="statusMessage" class="status-message"></div>
 
