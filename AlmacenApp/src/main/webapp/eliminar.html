@@ -292,7 +292,7 @@
         </div>
 
         <script>
-            function mostrarEstado(texto, tipo = "info") {
+function mostrarEstado(texto, tipo = "info") {
     const estadoDiv = document.getElementById("estadoConexion");
 
     if (tipo === "info") {
@@ -310,14 +310,20 @@ function ocultarEstado() {
     estadoDiv.innerHTML = "";
 }
 
-function verificarConexion() {
-    return fetch('buscar-producto?id=1', { method: 'HEAD' }) // Cambia a una ruta válida
-        .then(response => response.ok)
-        .catch(() => false);
+async function verificarConexion() {
+    try {
+        const response = await fetch('buscar-producto?id=1', { method: 'HEAD' });
+        return response.ok;
+    } catch {
+        return false;
+    }
 }
 
 async function buscarProductoPorId() {
-    const id = document.getElementById('idInput').value;
+    const id = document.getElementById('idInput').value.trim();
+    const resultadoDiv = document.getElementById('resultadoProducto');
+    resultadoDiv.innerHTML = "";
+
     if (!id) {
         alert("Ingrese un ID válido.");
         return;
@@ -328,22 +334,17 @@ async function buscarProductoPorId() {
     const conexionActiva = await verificarConexion();
     if (!conexionActiva) {
         ocultarEstado();
-        mostrarEstado("No se pudo conectar al servidor. Verifique si el XAMPP está encendido.", "error");
-        document.getElementById('resultadoProducto').innerHTML = ''; // Limpiar resultados
+        mostrarEstado("Estamos teniendo un problema para conectarnos al servidor. Inténtelo nuevamente más tarde.", "error");
         return;
     }
 
     fetch(`buscar-producto?id=${id}`)
         .then(response => {
-            if (!response.ok) {
-                // Si el producto no se encuentra, mostrar un mensaje específico
-                throw new Error("Producto no encontrado.");
-            }
+            if (!response.ok) throw new Error("Producto no encontrado.");
             return response.json();
         })
         .then(producto => {
             ocultarEstado();
-            const resultadoDiv = document.getElementById('resultadoProducto');
             resultadoDiv.innerHTML = `
                 <table class="product-table">
                     <thead>
@@ -365,54 +366,42 @@ async function buscarProductoPorId() {
         })
         .catch(error => {
             ocultarEstado();
-            let mensaje = error.message;
-            if (error instanceof TypeError) {
-                mensaje = "No se pudo conectar al servidor. Intente más tarde.";
-            } else if (mensaje === "Producto no encontrado.") {
-                mensaje = "El producto no fue encontrado, verifique el ID ingresado.";
-            }
+            const mensaje = error.message === "Producto no encontrado."
+                ? "El producto no fue encontrado. Verifique el ID ingresado."
+                : "Ocurrió un error al buscar el producto. Intente nuevamente.";
             mostrarEstado(mensaje, "error");
-            document.getElementById('resultadoProducto').innerHTML = 
-                `<div class="error-message">${mensaje}</div>`;
+            resultadoDiv.innerHTML = `<div class="error-message">${mensaje}</div>`;
         });
 }
 
 function eliminarProducto(id, intento = 1) {
-    if (!confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-        return;
-    }
+    if (!confirm("¿Estás seguro de que deseas eliminar este producto?")) return;
 
     mostrarEstado("Eliminando producto...", "info");
 
-    fetch(`eliminar-producto?id=${id}`, {
-        method: "DELETE"
-    })
-    .then(response => {
-        if (response.ok) {
+    fetch(`eliminar-producto?id=${id}`, { method: "DELETE" })
+        .then(response => {
+            if (!response.ok) return response.text().then(text => { throw new Error(text); });
             ocultarEstado();
             alert("Producto eliminado correctamente.");
             document.getElementById('resultadoProducto').innerHTML = '';
-        } else {
-            return response.text().then(text => {
-                throw new Error(text || "No se pudo eliminar el producto.");
-            });
-        }
-    })
-    .catch(error => {
-        console.error("Error al eliminar producto:", error);
-        let mensaje = error.message;
-        if (error instanceof TypeError) {
-            mensaje = "No se pudo conectar al servidor. Verifique si el XAMPP está encendido o intente más tarde.";
-        }
-        if (intento < 3) {
-            mostrarEstado(`${mensaje} (intento ${intento}/3). Reintentando...`, "error");
-            setTimeout(() => eliminarProducto(id, intento + 1), 2000);
-        } else {
-            mostrarEstado(mensaje, "error");
-        }
-    });
+        })
+        .catch(error => {
+            console.error("Error al eliminar producto:", error);
+            const mensaje = error instanceof TypeError
+                ? "Estamos teniendo un problema para conectarnos al servidor. Inténtelo nuevamente más tarde."
+                : error.message;
+
+            if (intento < 3) {
+                mostrarEstado(`${mensaje} (Intento ${intento}/3). Reintentando...`, "error");
+                setTimeout(() => eliminarProducto(id, intento + 1), 2000);
+            } else {
+                mostrarEstado(mensaje, "error");
+            }
+        });
 }
-        </script>
+</script>
+
 
     </body>
 </html>
