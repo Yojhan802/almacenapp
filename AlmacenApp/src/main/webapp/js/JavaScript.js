@@ -46,6 +46,8 @@ function agregarProducto(formulario) {
         showMessage("❌ Por favor ingrese un ID válido");
         return false;
     }
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    loadingOverlay.style.display = 'flex';
 
     fetch(`producto/${id}`)
         .then(res => {
@@ -63,12 +65,20 @@ function agregarProducto(formulario) {
             mostrarFormularioConDatos(producto);
         })
             .catch(err => {
-                if (err.message === "Error de Servidor" || err.message.includes("Failed to fetch")) {
-                    document.getElementById('erroreditar').style.display = 'block';
-                    setTimeout(buscarProductoPorIdEditar, 5000);
-                }
-                console.error("Error:", err);
-            });
+      if (err.message === "Error de Servidor" || err.message.includes("Failed to fetch")) {
+        document.getElementById('erroreditar').style.display = 'block';
+        setTimeout(buscarProductoPorIdEditar, 5000);
+      } else if (err.message === "Producto no encontrado") {
+        alert("❌ Producto no encontrado");
+      } else {
+        console.error("Error:", err);
+        alert("❌ Ocurrió un error");
+      }
+    })
+    .finally(() => {
+      // Ocultar el indicador de carga cuando termine la operación
+      loadingOverlay.style.display = 'none';
+    });
     
     return false;
 }
