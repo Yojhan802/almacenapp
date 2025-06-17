@@ -118,63 +118,103 @@ function agregarProducto(formulario) {
     }
     
     //pestaña eliminar
-    function buscarProductoPorId() {
-            const id = document.getElementById('idInput').value;
-            if (!id) {
-                alert("Ingrese un ID válido.");
-                return;
-            }
+/*
+    const estadoDiv = document.getElementById("estadoConexion");
 
-            fetch(`buscar-producto?id=${id}`)
-                .then(response => {
-                    if (!response.ok) throw new Error("Producto no encontrado.");
-                    return response.json();
-                })
-                .then(producto => {
-                    const resultadoDiv = document.getElementById('resultadoProducto');
-                    resultadoDiv.innerHTML = `
-                        <table class="product-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>${producto.id}</td>
-                                    <td>${producto.nombre}</td>
-                                    <td>${producto.precio}</td>
-                                    <td>${producto.stock}</td>
-                                    <td><button onclick="eliminarProducto(${producto.id})">Eliminar</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    `;
-                })
-                .catch(error => {
-                    document.getElementById('resultadoProducto').innerHTML = 
-                        `<div class="error-message">${error.message}</div>`;
-                });
+    function mostrarEstado(texto, tipo = "info") {
+        if (tipo === "info") {
+            estadoDiv.className = "loading-bar";
+            estadoDiv.innerHTML = `<div class="spinner"></div><span>${texto}</span>`;
+        } else if (tipo === "error") {
+            estadoDiv.className = "error-bar";
+            estadoDiv.textContent = texto;
+        } else {
+            estadoDiv.className = "";
+            estadoDiv.textContent = "";
         }
-        
-        function eliminarProducto(id) {
-            if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-                fetch(`eliminar-producto?id=${id}`, {
-                    method: "DELETE"
-                })
-                .then(response => {
-                    if (response.ok) {
-                        alert("Producto eliminado correctamente.");
-                        document.getElementById('resultadoProducto').innerHTML = '';
-                    } else {
-                        alert("No se pudo eliminar el producto.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error al eliminar producto:", error);
+    }
+
+    function ocultarEstado() {
+        estadoDiv.className = "";
+        estadoDiv.textContent = "";
+    }
+
+    function buscarProductoPorId() {
+        const id = document.getElementById('idInput').value;
+        if (!id) {
+            alert("Ingrese un ID válido.");
+            return;
+        }
+
+        mostrarEstado("Buscando producto...", "info");
+
+        fetch(`buscar-producto?id=${id}`)
+            .then(response => {
+                if (!response.ok) throw new Error("Producto no encontrado.");
+                return response.json();
+            })
+            .then(producto => {
+                ocultarEstado();
+                const resultadoDiv = document.getElementById('resultadoProducto');
+                resultadoDiv.innerHTML = `
+                    <table class="product-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${producto.id}</td>
+                                <td>${producto.nombre}</td>
+                                <td>${producto.precio}</td>
+                                <td>${producto.stock}</td>
+                                <td><button onclick="eliminarProducto(${producto.id})">Eliminar</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            })
+            .catch(error => {
+                mostrarEstado(error.message, "error");
+                document.getElementById('resultadoProducto').innerHTML = 
+                    `<div class="error-message">${error.message}</div>`;
+            });
+    }
+
+    function eliminarProducto(id, intento = 1) {
+        if (!confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+            return;
+        }
+
+        mostrarEstado("Eliminando producto...", "info");
+
+        fetch(`eliminar-producto?id=${id}`, {
+            method: "DELETE"
+        })
+        .then(response => {
+            if (response.ok) {
+                ocultarEstado();
+                alert("Producto eliminado correctamente.");
+                document.getElementById('resultadoProducto').innerHTML = '';
+            } else {
+                return response.text().then(text => {
+                    throw new Error(text || "No se pudo eliminar el producto.");
                 });
             }
-        }
+        })
+        .catch(error => {
+            console.error("Error al eliminar producto:", error);
+            if (intento < 3) {
+                mostrarEstado(`Fallo al eliminar (intento ${intento}/3). Reintentando...`, "error");
+                setTimeout(() => eliminarProducto(id, intento + 1), 2000);
+            } else {
+                mostrarEstado("No se pudo conectar al servidor. Intente más tarde.", "error");
+            }
+        });
+    }*/
+
+
         
         //pestaña index
         
