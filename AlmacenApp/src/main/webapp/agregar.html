@@ -241,36 +241,56 @@
     }
 
     function agregarProducto(formulario, intento = 1) {
-        mostrarEstado("Cargando producto...", "info");
+    mostrarEstado("Cargando producto...", "info");
 
-        const formData = new FormData(formulario);
-        const contexto = window.location.pathname.split("/")[1];
+    const formData = new FormData(formulario);
+    const contexto = window.location.pathname.split("/")[1];
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout de 5 segundos
 
-        fetch(`/${contexto}/AgregarProductoServlet`, {
-            method: "POST",
-            body: new URLSearchParams(formData)
-        })
-        .then(response => {
-            if (response.ok) {
-                ocultarEstado(); // ocultar el spinner
-                alert("Producto agregado con éxito.");
-                formulario.reset();
+    fetch(`/${contexto}/AgregarProductoServlet`, {
+        method: "POST",
+        body: new URLSearchParams(formData),
+        signal: controller.signal
+    })
+    .then(response => {
+        clearTimeout(timeoutId); // Limpiar el timeout si la respuesta llega
+        if (response.ok) {
+            ocultarEstado();
+            alert("Producto agregado con éxito.");
+            formulario.reset();
+        } else {
+            return response.text().then(text => {
+                console.error("Error:", text);
+                if (intento < 5) {
+                    mostrarEstado(`Error: ${text} (intento ${intento}/5)`, "error");
+                    setTimeout(() => agregarProducto(formulario, intento + 1), 5000); // Reducido a 1 segundo
+                } else {
+                    mostrarEstado(`Error final: ${text}. Intente más tarde.`, "error");
+                }
+                throw new Error(text);
+            });
+        }
+    })
+    .catch(error => {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            if (intento < 5) {
+                mostrarEstado(`Tiempo de espera agotado (intento ${intento}/5). Reintentando...`, "error");
+                setTimeout(() => agregarProducto(formulario, intento + 1), 5000);
             } else {
-                return response.text().then(text => {
-                    throw new Error(text);
-                });
+                mostrarEstado("Error: Tiempo de espera agotado. Intente más tarde.", "error");
             }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            if (intento < 3) {
-                mostrarEstado(`Error al conectar (intento ${intento}/3). Reintentando...`, "error");
-                setTimeout(() => agregarProducto(formulario, intento + 1), 3000); // Solo espera 1 segundo
+        } else {
+            if (intento < 5) {
+                mostrarEstado(`Error de conexión (intento ${intento}/5). Reintentando...`, "error");
+                setTimeout(() => agregarProducto(formulario, intento + 1), 5000);
             } else {
-                mostrarEstado("Estamos teniendo problemas con la conexión a la base de datos. Intente más tarde.", "error");
+                mostrarEstado("Error: Problemas de conexión. Intente más tarde.", "error");
             }
-        });
-    }
+        }
+    });
+}
 
     document.getElementById("formAgregarProducto").addEventListener("submit", function (e) {
         e.preventDefault();

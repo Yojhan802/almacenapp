@@ -19,28 +19,20 @@ import javax.servlet.http.HttpServletResponse;
 public class ProductoServlet extends HttpServlet {
     
     private static final Logger logger = Logger.getLogger(ProductoServlet.class.getName());
-    private final ProductoJpaController productoDao;
-    private final Gson gson;
-    
-    public ProductoServlet() {
-        this.productoDao = new ProductoJpaController();
-        this.gson = new Gson();
-    }
-    
-    // Constructor alternativo para testing
-    ProductoServlet(ProductoJpaController productoDao) {
-        this.productoDao = productoDao;
-        this.gson = new Gson();
-    }
 
+    private final Gson gson = new Gson();
+    
+  
+    // Constructor alternativo para testing
+ 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json;charset=UTF-8");
-        
+        resp.setContentType("application/json");
         ProductoJpaController dao = new ProductoJpaController();
         String pathInfo = req.getPathInfo();
 
-        resp.setContentType("application/json");
+        
         PrintWriter out = resp.getWriter();
 
         if (pathInfo == null || pathInfo.equals("/")) {
@@ -64,7 +56,7 @@ public class ProductoServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json;charset=UTF-8");
-        
+        ProductoJpaController productoDao = new ProductoJpaController();
         try {
             Producto actualizado = gson.fromJson(req.getReader(), Producto.class);
             productoDao.edit(actualizado);
