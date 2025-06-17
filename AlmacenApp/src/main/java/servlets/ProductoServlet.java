@@ -2,21 +2,41 @@ package servlets;
 
 import com.google.gson.Gson;
 import dao.ProductoJpaController;
-
+import dao.exceptions.NonexistentEntityException;
 import dto.Producto;
-
-
-import javax.servlet.*;
-import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(name = "ProductoServlet", urlPatterns = {"/producto", "/producto/*"})
 public class ProductoServlet extends HttpServlet {
+    
+    private static final Logger logger = Logger.getLogger(ProductoServlet.class.getName());
+    private final ProductoJpaController productoDao;
+    private final Gson gson;
+    
+    public ProductoServlet() {
+        this.productoDao = new ProductoJpaController();
+        this.gson = new Gson();
+    }
+    
+    // Constructor alternativo para testing
+    ProductoServlet(ProductoJpaController productoDao) {
+        this.productoDao = productoDao;
+        this.gson = new Gson();
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        //ProductoDAO dao = new ProductoDAO();
+        resp.setContentType("application/json;charset=UTF-8");
+        
         ProductoJpaController dao = new ProductoJpaController();
         String pathInfo = req.getPathInfo();
 
@@ -40,17 +60,31 @@ public class ProductoServlet extends HttpServlet {
             }
         }
     }
+
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        ProductoJpaController dao = new ProductoJpaController();
-        Producto actualizado = new Gson().fromJson(req.getReader(), Producto.class);
-
+        resp.setContentType("application/json;charset=UTF-8");
+        
         try {
-            dao.edit(actualizado);
+            Producto actualizado = gson.fromJson(req.getReader(), Producto.class);
+            productoDao.edit(actualizado);
             resp.setStatus(HttpServletResponse.SC_OK);
+        } catch (NonexistentEntityException e) {
+            logger.log(Level.WARNING, "Intento de actualizar producto inexistente", e);
+            sendErrorResponse(resp, HttpServletResponse.SC_NOT_FOUND, 
+                            "El producto no existe");
         } catch (Exception e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
+            logger.log(Level.SEVERE, "Error en PUT /producto", e);
+            sendErrorResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                            "Error al actualizar el producto");
         }
+    }
+
+    
+    
+    private void sendErrorResponse(HttpServletResponse resp, int statusCode, String message) 
+            throws IOException {
+        resp.setStatus(statusCode);
+        resp.getWriter().write("{\"error\":\"" + message + "\"}");
     }
 }

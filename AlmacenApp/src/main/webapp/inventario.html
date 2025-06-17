@@ -312,73 +312,111 @@
     <div class="mirror-effect"></div>
   </div>
 
-  <script>
+    <script>
+    // Configuraciones (ahora con backoff exponencial)
+    const MAX_REINTENTOS = 5;
+    const INITIAL_RETRY_DELAY = 1000; // 1 segundo inicial
+    const MAX_RETRY_DELAY = 30000; // Máximo 30 segundos entre reintentos
     let reintentos = 0;
-    const MAX_REINTENTOS = 3;
-    const TIMEOUT_FETCH = 3000; // 3 segundos para timeout de la petición
-    const RETRY_DELAY = 5000; // 5 segundos entre reintentos
+    let retryDelay = INITIAL_RETRY_DELAY;
 
-    function cargarProductos() {
-      const loadingElement = document.getElementById("loading");
-      const errorElement = document.getElementById("error");
-      const btnCargar = document.querySelector(".btn-cargar");
-      
-      // Mostrar indicador de carga y ocultar error
-      loadingElement.style.display = "block";
-      errorElement.style.display = "none";
-      btnCargar.disabled = true;
-      
-      // Configurar timeout para la petición
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_FETCH);
-      
-      fetch("producto", { signal: controller.signal })
-        .then(res => {
-          clearTimeout(timeoutId);
-          if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
-          return res.json();
-        })
-        .then(data => {
-          loadingElement.style.display = "none";
-          btnCargar.disabled = false;
-          renderizarProductos(data);
-          reintentos = 0; // Resetear contador de reintentos si tiene éxito
-        })
-        .catch(error => {
-          clearTimeout(timeoutId);
-          loadingElement.style.display = "none";
-          btnCargar.disabled = false;
-          
-          if (reintentos < MAX_REINTENTOS) {
+    async function cargarProductos() {
+        const loadingElement = document.getElementById("loading");
+        const errorElement = document.getElementById("error");
+        const btnCargar = document.querySelector(".btn-cargar");
+        
+        // Mostrar loading y ocultar error
+        loadingElement.style.display = "block";
+        errorElement.style.display = "none";
+        btnCargar.disabled = true;
+        
+        try {
+            const response = await fetchWithTimeout("producto", {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            renderizarProductos(data);
+            reintentos = 0; // Resetear contador
+            retryDelay = INITIAL_RETRY_DELAY; // Resetear delay
+        } catch (error) {
+            manejarError(error, loadingElement, errorElement, btnCargar);
+        } finally {
+            loadingElement.style.display = "none";
+            btnCargar.disabled = false;
+        }
+    }
+
+    // Función mejorada para fetch con timeout
+    async function fetchWithTimeout(resource, options = {}) {
+        const { timeout = 3000 } = options;
+        
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeout);
+        
+        const response = await fetch(resource, {
+            ...options,
+            signal: controller.signal
+        });
+        
+        clearTimeout(id);
+        return response;
+    }
+
+    // Manejo centralizado de errores
+    function manejarError(error, loadingElement, errorElement, btnCargar) {
+        console.error("Error al cargar productos:", error);
+        
+        if (reintentos < MAX_REINTENTOS) {
             reintentos++;
-            errorElement.textContent = `⚠ Error al cargar (intento ${reintentos}/${MAX_REINTENTOS}). Reintentando en 5 segundos...`;
+            retryDelay = Math.min(retryDelay * 2, MAX_RETRY_DELAY); // Backoff exponencial
+            
+            errorElement.textContent = `⚠ Error al cargar (intento ${reintentos}/${MAX_REINTENTOS}). Reintentando en ${retryDelay/1000} segundos...`;
             errorElement.style.display = "block";
-            setTimeout(cargarProductos, RETRY_DELAY);
-          } else {
-            errorElement.textContent = "⚠ Error: No se pudo cargar la lista de productos después de varios intentos. Por favor recarga la página.";
+            
+            setTimeout(cargarProductos, retryDelay);
+        } else {
+            errorElement.textContent = "⚠ Error: No se pudo cargar la lista de productos. " + 
+                                     (error.message.includes("Failed to fetch") ? 
+                                      "Verifica tu conexión a internet." : 
+                                      "Por favor recarga la página.");
             errorElement.style.display = "block";
-          }
+        }
+    }
+
+    // Renderizado de productos (similar al tuyo)
+    function renderizarProductos(productos) {
+        const tbody = document.querySelector("#tablaProductos tbody");
+        tbody.innerHTML = "";
+        
+        if (!productos || productos.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No hay productos disponibles</td></tr>`;
+            return;
+        }
+        
+        productos.forEach(producto => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${producto.id}</td>
+                <td>${producto.nombre}</td>
+                <td>${producto.stock}</td>
+                <td>S/ ${producto.precio?.toFixed(2) || '0.00'}</td>
+            `;
+            tbody.appendChild(row);
         });
     }
 
-    function renderizarProductos(productos) {
-      const tbody = document.querySelector("#tablaProductos tbody");
-      tbody.innerHTML = "";
-      
-      productos.forEach(producto => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${producto.id}</td>
-          <td>${producto.nombre}</td>
-          <td>${producto.stock}</td>
-          <td>S/ ${producto.precio.toFixed(2)}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    // Cargar productos automáticamente al cargar la página
-    document.addEventListener('DOMContentLoaded', cargarProductos);
-  </script>
+    // Cargar productos al inicio (con manejo de errores silencioso)
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarProductos().catch(e => console.error("Error inicial:", e));
+    });
+</script>
 </body>
 </html>
