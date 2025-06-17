@@ -310,14 +310,7 @@ function ocultarEstado() {
     estadoDiv.innerHTML = "";
 }
 
-async function verificarConexion() {
-    try {
-        const response = await fetch('buscar-producto?id=1', { method: 'HEAD' });
-        return response.ok;
-    } catch {
-        return false;
-    }
-}
+
 
 async function buscarProductoPorId() {
     const id = document.getElementById('idInput').value.trim();
@@ -330,13 +323,6 @@ async function buscarProductoPorId() {
     }
 
     mostrarEstado("Buscando producto...", "info");
-
-    const conexionActiva = await verificarConexion();
-    if (!conexionActiva) {
-        ocultarEstado();
-        mostrarEstado("Estamos teniendo un problema para conectarnos al servidor. Inténtelo nuevamente más tarde.", "error");
-        return;
-    }
 
     fetch(`buscar-producto?id=${id}`)
         .then(response => {

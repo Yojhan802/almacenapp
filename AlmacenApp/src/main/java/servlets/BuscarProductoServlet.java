@@ -1,6 +1,7 @@
 package servlets;
 
 import com.google.gson.Gson;
+import dao.ProductoJpaController;
 import dto.Producto;
 import java.io.IOException;
 import javax.persistence.EntityManager;
@@ -15,15 +16,11 @@ public class BuscarProductoServlet extends HttpServlet {
 
     private EntityManagerFactory emf;
 
-    @Override
-    public void init() throws ServletException {
-        emf = Persistence.createEntityManagerFactory("com.mycompany_AlmacenApp_war_1.0-SNAPSHOTPU");
-    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        ProductoJpaController pro = new ProductoJpaController();
         String idStr = request.getParameter("id");
         if (idStr == null || idStr.isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID no proporcionado.");
@@ -33,8 +30,8 @@ public class BuscarProductoServlet extends HttpServlet {
         try {
             int id = Integer.parseInt(idStr);
 
-            EntityManager em = emf.createEntityManager();
-            Producto producto = em.find(Producto.class, id);
+            
+            Producto producto = pro.findProducto(id);
 
             if (producto == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Producto no encontrado.");
@@ -45,7 +42,6 @@ public class BuscarProductoServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(json);
-            em.close();
 
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID inválido.");
